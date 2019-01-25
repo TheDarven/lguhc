@@ -1,0 +1,10 @@
+eclipse.preferences.version=1
+encoding//src/fr/thedarven/configuration/builders/InventoryRegister.java=UTF-8
+encoding//src/fr/thedarven/configuration/builders/OptionBoolean.java=UTF-8
+encoding//src/fr/thedarven/configuration/builders/OptionNumeric.java=UTF-8
+encoding//src/fr/thedarven/configuration/inventory/ConfigurationOpenInventory.java=UTF-8
+encoding//src/fr/thedarven/events/Commands.java=UTF-8
+encoding//src/fr/thedarven/game/Game.java=UTF-8
+encoding//src/fr/thedarven/game/enums/EnumCompo.java=UTF-8
+encoding//src/fr/thedarven/roles/Cupidon.java=UTF-8
+encoding//src/fr/thedarven/roles/RolesBis.java=UTF-8

@@ -1,0 +1,8 @@
+name: LGUHC
+version: 1.1
+author: TheDarven
+main: fr.thedarven.main.LGUHC
+load: POSTWORLD
+commands:
+  lg:
+    description: Toutes les commandes relatives a la partie de loups garous.
