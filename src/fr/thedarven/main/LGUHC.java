@@ -53,7 +53,7 @@ public class LGUHC extends JavaPlugin {
 	public static EnumGame etat = EnumGame.WAIT;
 	public SqlConnection sql;
 	
-	public static boolean developpement = true;
+	public static boolean developpement = false;
 	public static String succes_password;
 	
 	// public static ArrayList<UUID> playerList = new ArrayList<UUID>();
