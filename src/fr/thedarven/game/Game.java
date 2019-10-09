@@ -26,7 +26,6 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
 import fr.thedarven.configuration.builders.InventoryRegister;
-import fr.thedarven.events.SqlConnection;
 import fr.thedarven.game.enums.EnumGame;
 import fr.thedarven.game.enums.EnumTime;
 import fr.thedarven.main.LGUHC;
@@ -39,9 +38,9 @@ import fr.thedarven.roles.Loups;
 import fr.thedarven.roles.PetitAssassin;
 import fr.thedarven.roles.RolesBis;
 import fr.thedarven.roles.Spectateur;
+import fr.thedarven.utils.SqlConnection;
 import fr.thedarven.utils.SqlRequest;
 import fr.thedarven.utils.Title;
-
 
 public class Game {
 	
@@ -393,25 +392,27 @@ public class Game {
 		}
 		
 		for(PlayerLG pl : PlayerLG.getAlivePlayersManagers()){
-			try {
-	             PreparedStatement q = SqlConnection.connection.prepareStatement("SELECT win FROM players WHERE uuid = ?");
-	             q.setString(1, pl.getUuid().toString());
-	             ResultSet resultat = q.executeQuery();
-	             
-	             while(resultat.next()){
-			    	try {
-        				PreparedStatement q1 = SqlConnection.connection.prepareStatement("UPDATE players SET win = ? WHERE uuid = ?");
-        	            q1.setInt(1,resultat.getInt("win")+1);
-        	            q1.setString(2, pl.getUuid().toString());
-        	            q1.execute();
-        	            q1.close();
-        	        } catch (SQLException error) {
-        	        	error.printStackTrace();
-        	        }
-	             }
-	    	 } catch (SQLException error) {
-	    		 error.printStackTrace();
-    	     }
+			if(!LGUHC.developpement && LGUHC.sqlConnect) {
+				try {
+		             PreparedStatement q = SqlConnection.connection.prepareStatement("SELECT win FROM players WHERE uuid = ?");
+		             q.setString(1, pl.getUuid().toString());
+		             ResultSet resultat = q.executeQuery();
+		             
+		             while(resultat.next()){
+				    	try {
+	        				PreparedStatement q1 = SqlConnection.connection.prepareStatement("UPDATE players SET win = ? WHERE uuid = ?");
+	        	            q1.setInt(1,resultat.getInt("win")+1);
+	        	            q1.setString(2, pl.getUuid().toString());
+	        	            q1.execute();
+	        	            q1.close();
+	        	        } catch (SQLException error) {
+	        	        	error.printStackTrace();
+	        	        }
+		             }
+		    	 } catch (SQLException error) {
+		    		 error.printStackTrace();
+	    	     }
+			}
 		}
 		SqlRequest.updateGameDuree();
 	}

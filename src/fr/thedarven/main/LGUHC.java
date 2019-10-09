@@ -39,12 +39,12 @@ import fr.thedarven.events.CommandComplet;
 import fr.thedarven.events.Commands;
 import fr.thedarven.events.EventsManager;
 import fr.thedarven.events.Login;
-import fr.thedarven.events.SqlConnection;
 import fr.thedarven.game.Votes;
 import fr.thedarven.game.enums.EnumGame;
 import fr.thedarven.roles.RolesBis;
 import fr.thedarven.utils.BiomeEdit;
 import fr.thedarven.utils.Jump;
+import fr.thedarven.utils.SqlConnection;
 import fr.thedarven.utils.SqlRequest;
 
 public class LGUHC extends JavaPlugin {
@@ -53,7 +53,8 @@ public class LGUHC extends JavaPlugin {
 	public static EnumGame etat = EnumGame.WAIT;
 	public SqlConnection sql;
 	
-	public static boolean developpement = false;
+	public static boolean developpement = true;
+	public static boolean sqlConnect = false;
 	public static String succes_password;
 	
 	// public static ArrayList<UUID> playerList = new ArrayList<UUID>();
@@ -64,7 +65,6 @@ public class LGUHC extends JavaPlugin {
 	public static InventoryRegister configuration;
 	/*
 	 * Trouver le System.out
-	 * connected ok (bdd)
 	 *lg scenarios
 	 */
 	
@@ -84,8 +84,28 @@ public class LGUHC extends JavaPlugin {
 		manager = Bukkit.getScoreboardManager();
 		board = manager.getNewScoreboard();
 		
-		sql = new SqlConnection("jdbc:mysql://","sql-7.verygames.net","db565628","db565628","t968fdaf");
-        sql.connection();
+		this.saveDefaultConfig();
+		
+		String host = this.getConfig().getString("bd.host-address");
+		String database = this.getConfig().getString("bd.database-name");
+		String user = this.getConfig().getString("bd.user");
+		String password = this.getConfig().getString("bd.password");
+		host = host == null ? "" : host;
+		database = database == null ? "" : database;
+		user = user == null ? "" : user;
+		password = password == null ? "" : password;
+		
+		sql = new SqlConnection("jdbc:mysql://",host,database,user,password);
+        try {
+			sql.connection();
+			sqlConnect = true;
+		} catch (SQLException e) {
+			
+		}
+		
+		if(!sqlConnect) {
+			System.out.println("[ERREUR] La connexion a la base de donnee a echoue !");
+		}
         
 		BiomeEdit.changeBiome("FOREST");
         WorldCreator c = new WorldCreator("lguhc");
@@ -178,59 +198,62 @@ public class LGUHC extends JavaPlugin {
 			}
 		}
 		
-		try {
-            PreparedStatement q = SqlConnection.connection.prepareStatement("SELECT * FROM players ORDER BY kills DESC LIMIT 10");
-            ResultSet resultat = q.executeQuery();
-            
-            Location loc = new Location(Bukkit.getWorld("lguhc"), 14, 204, 0);
-    		ArmorStand as = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
-    		as.setCustomName("§6Classement des kills");
-    		as.setCustomNameVisible(true);
-    		as.setGravity(false);
-    		as.setVisible(false);
-    		loc.setY(loc.getY()-0.5);
-            int rang = 1;
-    		
-            while(resultat.next()){
-            	ArmorStand as1 = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
-    			as1.setCustomName("§e"+rang+". §f"+resultat.getString("name")+" §e"+resultat.getInt("kills"));
-    			as1.setCustomNameVisible(true);
-    			as1.setGravity(false);
-    			as1.setVisible(false);
-    			loc.setY(loc.getY()-0.4);
-    			rang++;
-            }
-            q.close();
-        } catch (SQLException error) {
-        	error.printStackTrace();
-        }
+		if(LGUHC.sqlConnect) {
+			try {
+	            PreparedStatement q = SqlConnection.connection.prepareStatement("SELECT * FROM players ORDER BY kills DESC LIMIT 10");
+	            ResultSet resultat = q.executeQuery();
+	            
+	            Location loc = new Location(Bukkit.getWorld("lguhc"), 14, 204, 0);
+	    		ArmorStand as = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
+	    		as.setCustomName("§6Classement des kills");
+	    		as.setCustomNameVisible(true);
+	    		as.setGravity(false);
+	    		as.setVisible(false);
+	    		loc.setY(loc.getY()-0.5);
+	            int rang = 1;
+	    		
+	            while(resultat.next()){
+	            	ArmorStand as1 = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
+	    			as1.setCustomName("§e"+rang+". §f"+resultat.getString("name")+" §e"+resultat.getInt("kills"));
+	    			as1.setCustomNameVisible(true);
+	    			as1.setGravity(false);
+	    			as1.setVisible(false);
+	    			loc.setY(loc.getY()-0.4);
+	    			rang++;
+	            }
+	            q.close();
+	        } catch (SQLException error) {
+	        	error.printStackTrace();
+	        }
+			
+			try {
+	            PreparedStatement q = SqlConnection.connection.prepareStatement("SELECT * FROM players ORDER BY win DESC LIMIT 10");
+	            ResultSet resultat = q.executeQuery();
+	            
+	            Location loc = new Location(Bukkit.getWorld("lguhc"), -14, 204, 0);
+	    		ArmorStand as = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
+	    		as.setCustomName("§6Classement des victoires");
+	    		as.setCustomNameVisible(true);
+	    		as.setGravity(false);
+	    		as.setVisible(false);
+	    		loc.setY(loc.getY()-0.5);
+	            int rang = 1;
+	    		
+	            while(resultat.next()){
+	            	ArmorStand as1 = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
+	    			as1.setCustomName("§e"+rang+". §f"+resultat.getString("name")+" §e"+resultat.getInt("win"));
+	    			as1.setCustomNameVisible(true);
+	    			as1.setGravity(false);
+	    			as1.setVisible(false);
+	    			loc.setY(loc.getY()-0.4);
+	    			rang++;
+	            }
+	            q.close();
+	        } catch (SQLException error) {
+	        	error.printStackTrace();
+	        }	
+		}
 		
-		try {
-            PreparedStatement q = SqlConnection.connection.prepareStatement("SELECT * FROM players ORDER BY win DESC LIMIT 10");
-            ResultSet resultat = q.executeQuery();
-            
-            Location loc = new Location(Bukkit.getWorld("lguhc"), -14, 204, 0);
-    		ArmorStand as = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
-    		as.setCustomName("§6Classement des victoires");
-    		as.setCustomNameVisible(true);
-    		as.setGravity(false);
-    		as.setVisible(false);
-    		loc.setY(loc.getY()-0.5);
-            int rang = 1;
-    		
-            while(resultat.next()){
-            	ArmorStand as1 = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
-    			as1.setCustomName("§e"+rang+". §f"+resultat.getString("name")+" §e"+resultat.getInt("win"));
-    			as1.setCustomNameVisible(true);
-    			as1.setGravity(false);
-    			as1.setVisible(false);
-    			loc.setY(loc.getY()-0.4);
-    			rang++;
-            }
-            q.close();
-        } catch (SQLException error) {
-        	error.printStackTrace();
-        }
 		
 		Location loc = new Location(Bukkit.getWorld("lguhc"), 0, 201, 15);
 		loc.setYaw(180);

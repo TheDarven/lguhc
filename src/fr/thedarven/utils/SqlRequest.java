@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-import fr.thedarven.events.SqlConnection;
 import fr.thedarven.main.LGUHC;
 import fr.thedarven.main.PlayerLG;
 
@@ -18,7 +17,7 @@ public class SqlRequest {
 	public static int id_partie = 0;
 	
 	public static void createGame() {
-		if(!LGUHC.developpement) {
+		if(!LGUHC.developpement && LGUHC.sqlConnect) {
 			try {
 				PreparedStatement q = SqlConnection.connection.prepareStatement("INSERT INTO site_partie(type,debut) VALUES (?,?)");
 		         q.setString(1, "lguhc");
@@ -43,7 +42,7 @@ public class SqlRequest {
 	}
 	
 	public static void updateGameDuree() {
-		if(!LGUHC.developpement) {
+		if(!LGUHC.developpement && LGUHC.sqlConnect) {
 			try {
 	        	PreparedStatement q = SqlConnection.connection.prepareStatement("UPDATE site_partie SET duree = ? WHERE id = ?");
 	        	q.setInt(1, LGUHC.timer);
@@ -60,7 +59,7 @@ public class SqlRequest {
 	
 	
 	public static void createLG(Player p) {
-		if(!LGUHC.developpement) {
+		if(!LGUHC.developpement && LGUHC.sqlConnect) {
 			try {
 				PreparedStatement q = SqlConnection.connection.prepareStatement("INSERT INTO site_role(id_partie,nom,uuid) VALUES (?,?,?)");
 		         q.setInt(1, id_partie);
@@ -75,7 +74,7 @@ public class SqlRequest {
 	}
 	
 	public static void updateLGRole(UUID uuid) {
-		if(!LGUHC.developpement) {
+		if(!LGUHC.developpement && LGUHC.sqlConnect) {
 			try {
 	            PreparedStatement q = SqlConnection.connection.prepareStatement("UPDATE site_role SET nom = ? WHERE uuid = ? AND id_partie = ?");
 	            q.setString(1, PlayerLG.getPlayerManager(uuid).getRole().getName());
@@ -90,7 +89,7 @@ public class SqlRequest {
 	}
 	
 	public static void updateLGKill(Player p) {
-		if(!LGUHC.developpement) {
+		if(!LGUHC.developpement && LGUHC.sqlConnect) {
 			try {
 	            PreparedStatement q = SqlConnection.connection.prepareStatement("SELECT * FROM site_role WHERE uuid = ? AND id_partie = ?");
 	            q.setString(1, p.getUniqueId().toString());
@@ -115,7 +114,7 @@ public class SqlRequest {
 	}
 	
 	public static void updateLGInfecté(UUID uuid, Boolean infecté) {
-		if(!LGUHC.developpement) {
+		if(!LGUHC.developpement && LGUHC.sqlConnect) {
 			int value = 0;
 			if(infecté) {
 				value = 1;
@@ -134,7 +133,7 @@ public class SqlRequest {
 	}
 	
 	public static void updateLGCouple(UUID uuid) {
-		if(!LGUHC.developpement) {
+		if(!LGUHC.developpement && LGUHC.sqlConnect) {
 			try {
 	            PreparedStatement q = SqlConnection.connection.prepareStatement("UPDATE site_role SET couple = ? WHERE uuid = ? AND id_partie = ?");
 	            q.setInt(1, 1);
@@ -149,7 +148,7 @@ public class SqlRequest {
 	}
 	
 	public static void updateLGMort(String uuid, int mort){
-		if(!LGUHC.developpement) {
+		if(!LGUHC.developpement && LGUHC.sqlConnect) {
 			try {
 				PreparedStatement q = SqlConnection.connection.prepareStatement("UPDATE site_role SET mort = ? WHERE uuid = ? AND id_partie = ?");
 				q.setInt(1, mort);
@@ -164,7 +163,7 @@ public class SqlRequest {
 	}
 	
 	public static void updatePlayerTimePlay(Player p) {
-		if(!LGUHC.developpement && hasAccount(p)) {
+		if(!LGUHC.developpement && LGUHC.sqlConnect && hasAccount(p)) {
 			try {
 	            PreparedStatement q = SqlConnection.connection.prepareStatement("SELECT * FROM site_joueur WHERE uuid = ?");
 	            q.setString(1, p.getUniqueId().toString());
@@ -188,7 +187,7 @@ public class SqlRequest {
 	}
 	
 	public static void updatePlayerLast(Player p) {
-		if(!LGUHC.developpement && hasAccount(p)) {
+		if(!LGUHC.developpement && LGUHC.sqlConnect && hasAccount(p)) {
 			try {
 				PreparedStatement q = SqlConnection.connection.prepareStatement("UPDATE site_joueur SET last = ? WHERE uuid = ?");
 	            q.setInt(1, getTimestamp());
@@ -203,7 +202,7 @@ public class SqlRequest {
 	}
 	
 	public static void updatePlayerPseudo(Player p) {
-		if(!LGUHC.developpement) {
+		if(!LGUHC.developpement && LGUHC.sqlConnect) {
 			try {
 				PreparedStatement q = SqlConnection.connection.prepareStatement("UPDATE site_joueur SET pseudo = ? WHERE uuid = ?");
 		        q.setString(1, p.getName());
@@ -217,7 +216,7 @@ public class SqlRequest {
 	}
 	
 	public static boolean hasAccount(Player p){  
-		if(!LGUHC.developpement) {
+		if(!LGUHC.developpement && LGUHC.sqlConnect) {
 	        try {
 	            PreparedStatement q = SqlConnection.connection.prepareStatement("SELECT uuid FROM site_joueur WHERE uuid = ?");
 	            q.setString(1, p.getUniqueId().toString());

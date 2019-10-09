@@ -106,7 +106,7 @@ public class Commands implements CommandExecutor {
 							return false;
 						}
 						((Soeur) pl.getRole()).setPouvoir(message);
-						p.sendMessage("§6[LGUHC]§a Ton message a été enregistré avec succès, ta soeur le revevra bientôt.");
+						p.sendMessage("§6[LGUHC]§a Ton message a été enregistré avec succès, ta soeur le recevra bientôt.");
 					}
 				}
 				if(args.length >= 2 && pl.getRole() instanceof Renard && pl.getRole().verifCommand(pl)){

@@ -21,6 +21,7 @@ import fr.thedarven.main.LGUHC;
 import fr.thedarven.main.PlayerLG;
 import fr.thedarven.roles.Spectateur;
 import fr.thedarven.utils.DisableF3;
+import fr.thedarven.utils.SqlConnection;
 import fr.thedarven.utils.SqlRequest;
 import fr.thedarven.utils.Title;
 import net.md_5.bungee.api.ChatColor;
@@ -35,7 +36,7 @@ public class Login implements Listener {
 		Player p = e.getPlayer();
 		SqlRequest.updatePlayerLast(p);
         PlayerLG pm = PlayerLG.getPlayerManager(p.getUniqueId());
-        if(!hasAccount(e.getPlayer())){
+        if(!LGUHC.developpement && LGUHC.sqlConnect && !hasAccount(e.getPlayer())) {
 			try {
 				PreparedStatement q = SqlConnection.connection.prepareStatement("INSERT INTO players(uuid,name) VALUES (?,?)");
 	            q.setString(1, e.getPlayer().getUniqueId().toString());
