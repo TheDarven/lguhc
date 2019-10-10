@@ -179,10 +179,167 @@ public abstract class RolesBis<T> implements Listener{
 		// EN VIE ET PAS EN TRAIN DE MOURRIR
 		if(pm.isAlive() && (Integer) pm.getPreDeath().get(0) == 0){
 			int timer = 0;
-			for(PlayerLG pl : PlayerLG.getAlivePlayersManagers()){
-				/* if((pl.getRole() instanceof Sorcière || (pKill != null && pl.getRole() instanceof InfectePèreDesLoups && PlayerLG.getPlayerManager(pKill).getRole().getInfecte())) && pl.getRole().verifCommand(pl)){
+			for(PlayerLG pl : PlayerLG.getAllPlayersManagers()){
+				if(pl.getRole() instanceof Sorcière || pl.getRole() instanceof InfectPèreDesLoups)
 					timer = timer + 6;
-				} */
+			}
+			pm.setPreDeath(0, timer);
+			
+			// SI ON PEUT LE RESSUCITER
+			if(LGUHC.etat.equals(EnumGame.MIDDLEGAME)){
+				pm.setInventory(0, p.getLocation());
+				pm.setInventory(1, p.getInventory());
+				pm.setInventory(2, p.getTotalExperience());
+				
+				
+				// Enlever le fall au tp
+				// Disable les damage
+				
+				// Spectator 3 à la reconnexion
+				
+				
+				p.setGameMode(GameMode.ADVENTURE);
+				p.sendMessage("§6[LGUHC]§9 Vous êtes mort mais on peut vous ressusciter, merci de patienter quelques instant.");
+				Location loc = new Location(Bukkit.getWorld("lguhc"), 0.0, 1000.0, 0.0);
+				p.teleport(loc);
+				
+				new BukkitRunnable(){
+					boolean infectAt6 = true;
+					
+					@Override
+					public void run(){
+						if((Integer) pm.getPreDeath().get(0) == 12) {
+							infectAt6 = false;
+						}else if(infectAt6 && (Integer) pm.getPreDeath().get(0) == 6) {
+							infectAt6 = false;
+							for(PlayerLG pl : PlayerLG.getAllPlayersManagers()){
+								if(pl.getRole() instanceof InfectPèreDesLoups)
+									infectAt6 = true;
+							}
+						}
+						
+						if((Integer) pm.getPreDeath().get(0) == 12 && pKill != null && PlayerLG.getPlayerManager(pKill).getRole().getInfecte()){
+							for(PlayerLG pl : PlayerLG.getAlivePlayersManagers()){
+								if(pl.getRole() instanceof InfectPèreDesLoups){
+									if(pl.getRole().verifCommand(pl)) {
+										TextComponent message = new TextComponent("§6[LGUHC]§6 Le §6joueur "+p.getName()+" §6est §6mort. §6Vous §6avez §66 §6secondes §6pour §6le §6transformer §6en §6cliquant §6ici.");  // AFFICHE
+										message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§9Transformer "+p.getName()).create()));   // SURVOL
+										message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/lg transform "+p.getName()));
+										pl.getPlayer().spigot().sendMessage(message);
+										pm.setPreDeath(0, (Integer) pm.getPreDeath().get(0)-1);
+										pm.setPreDeath(1, "InfectePèreDesLoups");	
+									}
+									break;
+								}
+							}
+						}
+						
+						if((Integer) pm.getPreDeath().get(0) == 6){
+							if(infectAt6) {
+								if(pKill != null && PlayerLG.getPlayerManager(pKill).getRole().getInfecte()){
+									for(PlayerLG pl : PlayerLG.getAlivePlayersManagers()){
+										if(pl.getRole() instanceof InfectPèreDesLoups){
+											if(pl.getRole().verifCommand(pl)) {
+												TextComponent message = new TextComponent("§6[LGUHC]§6 Le §6joueur "+p.getName()+" §6est §6mort. §6Vous §6avez §66 §6secondes §6pour §6le §6transformer §6en §6cliquant §6ici.");  // AFFICHE
+												message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§9Transformer "+p.getName()).create()));   // SURVOL
+												message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/lg transform "+p.getName()));
+												pl.getPlayer().spigot().sendMessage(message);
+												pm.setPreDeath(0, (Integer) pm.getPreDeath().get(0)-1);
+												pm.setPreDeath(1, "InfectePèreDesLoups");
+											}
+											break;
+										}
+									}
+								}
+							}else {
+								for(PlayerLG pl : PlayerLG.getAlivePlayersManagers()){
+									if(pl.getRole() instanceof Sorcière){
+										if(pl.getRole().verifCommand(pl)) {
+											TextComponent message = new TextComponent("§6[LGUHC]§6 Le joueur "+p.getName()+" §6est §6mort. §6Vous §6avez §66 §6secondes §6pour §6le §6sauver §6en §6cliquant §6ici.");  // AFFICHE
+											message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§9Sauver "+p.getName()).create()));   // SURVOL
+											message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/lg revive "+p.getName()));
+											pl.getPlayer().spigot().sendMessage(message);
+											pm.setPreDeath(0, (Integer) pm.getPreDeath().get(0)-1);
+											pm.setPreDeath(1, "Sorcière");
+										}
+										break;
+									}
+								}
+							}
+						}
+						
+						if((Integer) pm.getPreDeath().get(0) == 0){
+							killPlayer(uuid, false);
+							this.cancel();
+						}
+						
+						// ON LE REVIVE
+						if((Integer) pm.getPreDeath().get(0) < 0) {
+							
+							// SORCIERE QUI REVIVE
+							if((Integer) pm.getPreDeath().get(0) == -1){
+
+								// TELEPORT
+								p.sendMessage("§6[LGUHC]§e La sorcière vient de vous ressusciter.");					
+							}
+							
+							// PERE DES LOUPS QUI REVIVE
+							if((Integer) pm.getPreDeath().get(0) == -2){
+								
+								// TELEPORT
+								p.sendMessage("§6[LGUHC]§e L'infecte père des loups vient de vous transformer : vous faites désormais partie du camp des Loups-Garous.");
+								
+								
+								String pseudo = "§6[LGUHC] §4Voici la liste des loups-garous :  §c";
+								// for(UUID uuid : LGUHC.playerList){
+								for(PlayerLG player : PlayerLG.getAlivePlayersManagers()) {
+									if((player.getRole().getInfecte() || player.getRole().getTaupelist()) && player.isAlive()){
+										pseudo += Bukkit.getOfflinePlayer(uuid).getName()+"  ";
+									}
+								}
+								p.sendMessage(pseudo);
+								for(Player player : Bukkit.getOnlinePlayers()){
+									if(PlayerLG.getPlayerManager(player.getUniqueId()).getRole().getInfecte() && PlayerLG.getPlayerManager(player.getUniqueId()).isAlive()){
+										player.sendMessage("§6[LGUHC]§c "+p.getName()+" a rejoint le camp des Loups-Garous.");
+									}
+								}
+							}
+							pm.setPreDeath(0, 0);
+							p.setFallDistance(0);
+							p.setHealth(pm.getRole().getMaxhealth());
+							p.setGameMode(GameMode.SURVIVAL);
+							
+							Random r = new Random();
+							int border = (int) (Bukkit.getServer().getWorld("lguhc").getWorldBorder().getSize()/2)-20;
+							int x = -border + r.nextInt(border*2);
+							int z = -border + r.nextInt(border*2);
+							int y = Bukkit.getWorld("lguhc").getHighestBlockYAt(x,z);
+							Location loc = new Location(Bukkit.getWorld("lguhc"), x, y+1, z);
+							p.teleport(loc);
+							
+							this.cancel();
+						}
+						
+						if((Integer) pm.getPreDeath().get(0) > 0){
+							pm.setPreDeath(0, (Integer) pm.getPreDeath().get(0)-1);	
+						}
+					}
+				}.runTaskTimer(LGUHC.instance,20,20);
+			}else{
+				pm.setInventory(0, p.getLocation());
+				pm.setInventory(1, p.getInventory());
+				pm.setInventory(2, p.getTotalExperience());
+				killPlayer(uuid, false);
+			}	
+		}
+		
+		
+		
+		
+		// EN VIE ET PAS EN TRAIN DE MOURRIR
+		/* if(pm.isAlive() && (Integer) pm.getPreDeath().get(0) == 0){
+			int timer = 0;
+			for(PlayerLG pl : PlayerLG.getAlivePlayersManagers()){
 				if(pl.getRole() instanceof Sorcière || (pKill != null && pl.getRole() instanceof InfectPèreDesLoups && PlayerLG.getPlayerManager(pKill).getRole().getInfecte())){
 					timer = timer + 6;
 				}
@@ -195,9 +352,16 @@ public abstract class RolesBis<T> implements Listener{
 				pm.setInventory(1, p.getInventory());
 				pm.setInventory(2, p.getTotalExperience());
 				
-				p.setGameMode(GameMode.SPECTATOR);
+				
+				// Enlever le fall au tp
+				// Disable les damage
+				
+				// Spectator 3 à la reconnexion
+				
+				
+				p.setGameMode(GameMode.ADVENTURE);
 				p.sendMessage("§6[LGUHC]§9 Vous êtes mort mais on peut vous ressusciter, merci de patienter quelques instant.");
-				Location loc = new Location(Bukkit.getWorld("lguhc"), 0.0, 500.0, 0.0);
+				Location loc = new Location(Bukkit.getWorld("lguhc"), 0.0, 1000.0, 0.0);
 				p.teleport(loc);
 				
 				new BukkitRunnable(){
@@ -209,9 +373,9 @@ public abstract class RolesBis<T> implements Listener{
 							infectAt6 = false;
 						}
 						
-						if((Integer) pm.getPreDeath().get(0) == 12){
+						if((Integer) pm.getPreDeath().get(0) == 12 && pKill != null && PlayerLG.getPlayerManager(pKill).getRole().getInfecte()){
 							for(PlayerLG pl : PlayerLG.getAlivePlayersManagers()){
-								if(pKill != null && pl.getRole() instanceof InfectPèreDesLoups && pl.getRole().verifCommand(pl) && PlayerLG.getPlayerManager(pKill).getRole().getInfecte()){
+								if(pl.getRole() instanceof InfectPèreDesLoups && pl.getRole().verifCommand(pl)){
 									TextComponent message = new TextComponent("§6[LGUHC]§6 Le joueur "+p.getName()+" est mort. Vous avez 6 secondes pour le transformer en cliquant ici.");  // AFFICHE
 									message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§9Transformer "+p.getName()).create()));   // SURVOL
 									message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/lg transform "+p.getName()));
@@ -225,7 +389,7 @@ public abstract class RolesBis<T> implements Listener{
 						if((Integer) pm.getPreDeath().get(0) == 6){
 							for(PlayerLG pl : PlayerLG.getAlivePlayersManagers()){
 								if(pl.getRole() instanceof Sorcière && pl.getRole().verifCommand(pl)){
-									TextComponent message = new TextComponent("§6[LGUHC]§6 Le joueur "+p.getName()+" est mort. Vous avez 6 secondes pour le sauver en cliquant ici.");  // AFFICHE
+									TextComponent message = new TextComponent("§6[LGUHC]§6 Le joueur "+p.getName()+" §6est §6mort. §6Vous §6avez §66 §6secondes §6pour §6le §6sauver §6en §6cliquant §6ici.");  // AFFICHE
 									message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§9Sauver "+p.getName()).create()));   // SURVOL
 									message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/lg revive "+p.getName()));
 									pl.getPlayer().spigot().sendMessage(message);
@@ -233,7 +397,7 @@ public abstract class RolesBis<T> implements Listener{
 									pm.setPreDeath(1, "Sorcière");
 									return;
 								}else if(pKill != null && pl.getRole() instanceof InfectPèreDesLoups && pl.getRole().verifCommand(pl) && PlayerLG.getPlayerManager(pKill).getRole().getInfecte() && infectAt6){
-									TextComponent message = new TextComponent("§6[LGUHC]§6 Le joueur "+p.getName()+" est mort. Vous avez 6 secondes pour le transformer en cliquant ici.");  // AFFICHE
+									TextComponent message = new TextComponent("§6[LGUHC]§6 Le §6joueur "+p.getName()+" §6est §6mort. §6Vous §6avez §66 §6secondes §6pour §6le §6transformer §6en §6cliquant §6ici.");  // AFFICHE
 									message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§9Transformer "+p.getName()).create()));   // SURVOL
 									message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/lg transform "+p.getName()));
 									pl.getPlayer().spigot().sendMessage(message);
@@ -280,6 +444,8 @@ public abstract class RolesBis<T> implements Listener{
 									}
 								}
 							}
+							pm.setPreDeath(0, 0);
+							p.setFallDistance(0);
 							p.setHealth(pm.getRole().getMaxhealth());
 							p.setGameMode(GameMode.SURVIVAL);
 							
@@ -291,7 +457,6 @@ public abstract class RolesBis<T> implements Listener{
 							Location loc = new Location(Bukkit.getWorld("lguhc"), x, y+1, z);
 							p.teleport(loc);
 							
-							pm.setPreDeath(0, 0);
 							this.cancel();
 						}
 						
@@ -306,7 +471,7 @@ public abstract class RolesBis<T> implements Listener{
 				pm.setInventory(2, p.getTotalExperience());
 				killPlayer(uuid, false);
 			}	
-		}
+		} */
 	}
 	
 	public static void killPlayer(UUID uuid, boolean couple){

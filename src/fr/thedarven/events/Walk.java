@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -44,8 +45,10 @@ public class Walk implements Listener {
 			if(!(destination.getBlockX() == origin.getBlockX() && destination.getBlockZ() == origin.getBlockZ())) {
 				e.setTo(e.getFrom());
 			}
-		}else if((LGUHC.etat.equals(EnumGame.STARTGAME) || LGUHC.etat.equals(EnumGame.MIDDLEGAME)) && e.getPlayer().getGameMode().equals(GameMode.SPECTATOR) && PlayerLG.getPlayerManager(e.getPlayer().getUniqueId()).isAlive() && (Integer) PlayerLG.getPlayerManager(e.getPlayer().getUniqueId()).getPreDeath().get(0) != 0 && e.getPlayer().getLocation().getBlockY() > 400){
-			e.setCancelled(true);
+		}else if((LGUHC.etat.equals(EnumGame.STARTGAME) || LGUHC.etat.equals(EnumGame.MIDDLEGAME)) && e.getPlayer().getGameMode().equals(GameMode.ADVENTURE) && PlayerLG.getPlayerManager(e.getPlayer().getUniqueId()).isAlive() && (Integer) PlayerLG.getPlayerManager(e.getPlayer().getUniqueId()).getPreDeath().get(0) != 0 && e.getPlayer().getLocation().getBlockY() > 400){
+			if(!(e.getTo().getBlockX() == e.getFrom().getBlockX() && e.getTo().getBlockZ() == e.getFrom().getBlockZ() && e.getTo().getBlockY() == e.getFrom().getBlockY())) {
+				e.setTo(e.getFrom());
+			}
 		}
 	}
 	
@@ -55,5 +58,11 @@ public class Walk implements Listener {
 			e.setCancelled(true);
 		}
 	} 
-
+	
+	@EventHandler
+    public void onKick(PlayerKickEvent e){
+		if(e.getReason().equals("Flying is not enabled on this server")){
+			e.setCancelled(true);
+		}
+	}
 }

@@ -223,7 +223,7 @@ public class Commands implements CommandExecutor {
 				}
 				if(args.length >= 2 && pl.getRole() instanceof Sorcière && pl.getRole().verifCommand(pl)){
 					if(args[0].equals("revive") && playerInGame(args[1]) != null){
-						if(!Bukkit.getOfflinePlayer(playerInGame(args[1])).isOnline() || PlayerLG.getPlayerManager(playerInGame(args[1])).getRole() instanceof Spectateur || !PlayerLG.getPlayerManager(playerInGame(args[1])).isAlive() || !Bukkit.getPlayer(playerInGame(args[1])).getGameMode().equals(GameMode.SPECTATOR) || PlayerLG.getPlayerManager(playerInGame(args[1])).getPreDeath().get(1) != "Sorcière"){
+						if(!Bukkit.getOfflinePlayer(playerInGame(args[1])).isOnline() || PlayerLG.getPlayerManager(playerInGame(args[1])).getRole() instanceof Spectateur || !PlayerLG.getPlayerManager(playerInGame(args[1])).isAlive() || !Bukkit.getPlayer(playerInGame(args[1])).getGameMode().equals(GameMode.ADVENTURE) || PlayerLG.getPlayerManager(playerInGame(args[1])).getPreDeath().get(1) != "Sorcière"){
 							return false;
 						}						
 						p.sendMessage("§6[LGUHC]§a Vous avez réssusciter "+Bukkit.getOfflinePlayer(playerInGame(args[1])).getName()+" avec succès.");
@@ -239,7 +239,7 @@ public class Commands implements CommandExecutor {
 				}
 				if(args.length >= 2 && pl.getRole() instanceof InfectPèreDesLoups && pl.getRole().verifCommand(pl)){
 					if(args[0].equals("transform") && args[1] != null && playerInGame(args[1]) != null){
-						if(!Bukkit.getOfflinePlayer(playerInGame(args[1])).isOnline() || PlayerLG.getPlayerManager(playerInGame(args[1])).getRole() instanceof Spectateur || !PlayerLG.getPlayerManager(playerInGame(args[1])).isAlive() || !Bukkit.getPlayer(playerInGame(args[1])).getGameMode().equals(GameMode.SPECTATOR) || PlayerLG.getPlayerManager(playerInGame(args[1])).getPreDeath().get(1) != "InfectePèreDesLoups"){
+						if(!Bukkit.getOfflinePlayer(playerInGame(args[1])).isOnline() || PlayerLG.getPlayerManager(playerInGame(args[1])).getRole() instanceof Spectateur || !PlayerLG.getPlayerManager(playerInGame(args[1])).isAlive() || !Bukkit.getPlayer(playerInGame(args[1])).getGameMode().equals(GameMode.ADVENTURE) || PlayerLG.getPlayerManager(playerInGame(args[1])).getPreDeath().get(1) != "InfectePèreDesLoups"){
 							return false;
 						}	
 						p.sendMessage("§6[LGUHC]§a Vous avez transformé "+Bukkit.getOfflinePlayer(playerInGame(args[1])).getName()+" avec succès.");

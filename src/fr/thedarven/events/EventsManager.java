@@ -18,6 +18,7 @@ public class EventsManager {
 		pm.registerEvents(new BreakPlace(pl), pl);
 		pm.registerEvents(new Hunger(pl), pl);
 		pm.registerEvents(new ClickPlayer(pl), pl);
+		pm.registerEvents(new ItemPickUp(pl), pl);
 		
 		pm.registerEvents(new ConfigInventory(pl), pl);	
 		pm.registerEvents(new WorldGeneration(pl), pl);

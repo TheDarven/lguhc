@@ -41,13 +41,14 @@ public class Sorcière extends RolesBis<Boolean>{
 	public void startRole(PlayerLG pl) {
 		if(LGUHC.etat.equals(EnumGame.MIDDLEGAME) && pl.isOnline() && kit){	
 			messageRole(pl);
-			Potion heal = new Potion(PotionType.INSTANT_HEAL, 3);
+			
+			Potion heal = new Potion(PotionType.INSTANT_HEAL, 1);
 			heal.setSplash(true);
 			Potion regeneration = new Potion(PotionType.REGEN, 1);
 			regeneration.setSplash(true);
-			Potion damage = new Potion(PotionType.INSTANT_DAMAGE, 3);
+			Potion damage = new Potion(PotionType.INSTANT_DAMAGE, 1);
 			damage.setSplash(true);
-					
+			
 			Bukkit.getWorld("lguhc").dropItemNaturally(pl.getPlayer().getLocation(), heal.toItemStack(3));
 			Bukkit.getWorld("lguhc").dropItemNaturally(pl.getPlayer().getLocation(), regeneration.toItemStack(1));
 			Bukkit.getWorld("lguhc").dropItemNaturally(pl.getPlayer().getLocation(), damage.toItemStack(3));

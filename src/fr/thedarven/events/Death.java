@@ -1,5 +1,6 @@
 package fr.thedarven.events;
 
+import org.bukkit.GameMode;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -62,58 +63,63 @@ public class Death implements Listener {
 				if(LGUHC.timer < 60) {
 					e.setCancelled(true);
 				}else {
-					if(e instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent)e).getDamager() instanceof Player){
-						pm.setLastPunch(PlayerLG.getPlayerManager(((EntityDamageByEntityEvent)e).getDamager().getUniqueId()), LGUHC.timer);
-						for(PotionEffect potion : ((Player) ((EntityDamageByEntityEvent)e).getDamager()).getActivePotionEffects()) {
-							if(potion.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
-								e.setDamage(e.getDamage()-(potion.getAmplifier()+1)*0.75);
-							}
-						}
-					}
-					
-					
-					if(e.getCause().equals(DamageCause.FALL)) {
-						for(PlayerLG pl : PlayerLG.getAllPlayersManagers()) {
-							if(pl.getRole() instanceof Salvateur) {
-								if(((Salvateur) pl.getRole()).getPouvoir().get(1) != null && ((Salvateur) pl.getRole()).getPouvoir().get(1).equals(pm.getUuid())) {
-									e.setCancelled(true);
-									return;
-								}
-							}
-						}
-					}
-					if(p.getHealth() - e.getFinalDamage() <= 0){
+					if(p.getGameMode().equals(GameMode.ADVENTURE) && PlayerLG.getPlayerManager(p.getUniqueId()).isAlive() && (Integer) PlayerLG.getPlayerManager(p.getUniqueId()).getPreDeath().get(0) != 0 && p.getLocation().getBlockY() > 400)
 						e.setCancelled(true);
-						
-						// Echange son rôle avec un villageois
-						if(LGUHC.etat.equals(EnumGame.STARTGAME) && pm.isAlive() && !(pm.getRole() instanceof Villageois) && !(pm.getRole() instanceof Spectateur)) {
-							boolean changement = false;
-							for(PlayerLG pl : PlayerLG.getAlivePlayersManagers()) {
-								if(!changement && !pl.getUuid().equals(pm.getUuid()) && pl.getRole() instanceof Villageois) {
-									RolesBis<?> villageois = pl.getRole();
-									pl.setRole(pm.getRole());
-									pm.setRole(villageois);
-									changement = true;
+					else {
+						if(e instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent)e).getDamager() instanceof Player){
+							pm.setLastPunch(PlayerLG.getPlayerManager(((EntityDamageByEntityEvent)e).getDamager().getUniqueId()), LGUHC.timer);
+							for(PotionEffect potion : ((Player) ((EntityDamageByEntityEvent)e).getDamager()).getActivePotionEffects()) {
+								if(potion.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
+									e.setDamage(e.getDamage()-(potion.getAmplifier()+1)*0.75);
 								}
 							}
 						}
 						
-						PlayerLG damager = pm.getLastPunch();
-						if(damager == null) {
-							pm.getRole().playerDeath(p,null);
-						}else {
-							if(damager.getRole() instanceof InfectPèreDesLoups && damager.isAlive()) {
-								damager.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 2400, 1, true, false));
-							}else if(damager.getRole().getInfecte() && damager.isAlive()){
-								damager.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 2400, 0, true, false));
-							}else if((damager.getRole() instanceof Assassin || damager.getRole() instanceof PetitAssassin) && damager.isAlive()){
-								damager.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 2400, 1, true, false));	
+						
+						if(e.getCause().equals(DamageCause.FALL)) {
+							for(PlayerLG pl : PlayerLG.getAllPlayersManagers()) {
+								if(pl.getRole() instanceof Salvateur) {
+									if(((Salvateur) pl.getRole()).getPouvoir().get(1) != null && ((Salvateur) pl.getRole()).getPouvoir().get(1).equals(pm.getUuid())) {
+										e.setCancelled(true);
+										return;
+									}
+								}
 							}
-						    SqlRequest.updateLGKill(damager.getPlayer());
-						    damager.addKill();
-						    pm.getRole().playerDeath(p,damager.getUuid());
 						}
+						if(p.getHealth() - e.getFinalDamage() <= 0){
+							e.setCancelled(true);
+							
+							// Echange son rôle avec un villageois
+							if(LGUHC.etat.equals(EnumGame.STARTGAME) && pm.isAlive() && !(pm.getRole() instanceof Villageois) && !(pm.getRole() instanceof Spectateur)) {
+								boolean changement = false;
+								for(PlayerLG pl : PlayerLG.getAlivePlayersManagers()) {
+									if(!changement && !pl.getUuid().equals(pm.getUuid()) && pl.getRole() instanceof Villageois) {
+										RolesBis<?> villageois = pl.getRole();
+										pl.setRole(pm.getRole());
+										pm.setRole(villageois);
+										changement = true;
+									}
+								}
+							}
+							
+							PlayerLG damager = pm.getLastPunch();
+							if(damager == null) {
+								pm.getRole().playerDeath(p,null);
+							}else {
+								if(damager.getRole() instanceof InfectPèreDesLoups && damager.isAlive()) {
+									damager.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 2400, 1, true, false));
+								}else if(damager.getRole().getInfecte() && damager.isAlive()){
+									damager.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 2400, 0, true, false));
+								}else if((damager.getRole() instanceof Assassin || damager.getRole() instanceof PetitAssassin) && damager.isAlive()){
+									damager.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 2400, 1, true, false));	
+								}
+							    SqlRequest.updateLGKill(damager.getPlayer());
+							    damager.addKill();
+							    pm.getRole().playerDeath(p,damager.getUuid());
+							}
+						}	
 					}
+					
 					
 					/* if(p.getHealth() - e.getFinalDamage() <= 0){							
 					if(LGUHC.etat.equals(EnumGame.STARTGAME) || LGUHC.etat.equals(EnumGame.MIDDLEGAME)){
