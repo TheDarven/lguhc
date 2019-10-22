@@ -218,7 +218,9 @@ public class Commands implements CommandExecutor {
 						PlayerLG.getPlayerManager(playerInGame(args[1])).getRole().addEffect(new EffetClass(EnumTime.DAY, new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40000, 0), false, false));
 						PlayerLG.getPlayerManager(playerInGame(args[1])).getRole().addEffect(new EffetClass(EnumTime.NIGHT, new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40000, 0), false, false));
 						p.sendMessage("§6[LGUHC]§a Le joueur "+Bukkit.getOfflinePlayer(playerInGame(args[1])).getName()+" a été protégé par ta volonté.");
-						p.sendMessage("§6[LGUHC]§a Le salvateur a décidé de vous protéger. Vous obtenez Resistance I et NoFall durant 20 minutes.");
+						Player pSelect = PlayerLG.getPlayerManager(playerInGame(args[1])).getPlayer();
+						if(pSelect != null)
+							pSelect.sendMessage("§6[LGUHC]§a Le salvateur a décidé de vous protéger. Vous obtenez Resistance I et NoFall durant 20 minutes.");
 					}
 				}
 				if(args.length >= 2 && pl.getRole() instanceof Sorcière && pl.getRole().verifCommand(pl)){
