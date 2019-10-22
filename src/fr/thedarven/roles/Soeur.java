@@ -57,17 +57,12 @@ public class Soeur extends RolesBis<String>{
 			}
 		}
 		if(LGUHC.etat.equals(EnumGame.MIDDLEGAME) && LGUHC.timer%600 == 360) {
-			int count = 0;
-			for(PlayerLG p : PlayerLG.getAllPlayersManagers()) {
-				if(p.getRole() instanceof Soeur && p.getRole().getPouvoir() != null) {
-					count++;
-				}
-			}
-			if(pl.isOnline() && count == 2) {
+			if(pl.isOnline() && pl.getRole() != null && pl.getRole().getPouvoir() != null) {
 				for(PlayerLG p : PlayerLG.getAllPlayersManagers()) {
 					if(p.getRole() instanceof Soeur) {
 						if(!p.equals(pl)) {
-							pl.getPlayer().sendMessage("§6[LGUHC] §7§o("+Bukkit.getOfflinePlayer(p.getUuid())+") §r§d"+p.getRole().getPouvoir());
+							p.getPlayer().sendMessage("§6[LGUHC] §7§o("+Bukkit.getOfflinePlayer(pl.getUuid())+") §r§d"+pl.getRole().getPouvoir());
+							return;
 						}
 					}
 				}

@@ -35,10 +35,11 @@ public class CommandComplet implements TabCompleter {
         				if(COMMANDS[1][i] != null && !COMMANDS[1][i].getClass().getName().equals(PlayerLG.getPlayerManager(Bukkit.getPlayerExact(sender.getName()).getUniqueId()).getRole().getClass().getName())) {
         					ajout = false;
         				}
-        				if((boolean) COMMANDS[2][i] == true && !Bukkit.getPlayerExact(sender.getName()).isOp()) {
+        				if((boolean) COMMANDS[2][i] == true && !Bukkit.getPlayerExact(sender.getName()).isOp() || !((String)COMMANDS[0][i]).startsWith(args[args.length-1])) {
         					ajout = false;
         				}
         				if(ajout) {
+        					
         					completions.add((String) COMMANDS[0][i]);
         				}
         			}
@@ -54,7 +55,7 @@ public class CommandComplet implements TabCompleter {
         				if(COMMANDS[1][i] != null && !LGUHC.etat.equals(EnumGame.MIDDLEGAME)) {
         					ajout = false;
         				}
-        				if((boolean) COMMANDS[2][i] == true && !Bukkit.getPlayerExact(sender.getName()).isOp()) {
+        				if((boolean) COMMANDS[2][i] == true && !Bukkit.getPlayerExact(sender.getName()).isOp() || !((String)COMMANDS[0][i]).startsWith(args[args.length-1])) {
         					ajout = false;
         				}
         				if(ajout) {
@@ -68,34 +69,38 @@ public class CommandComplet implements TabCompleter {
  	        		List<String> completions = new ArrayList<String>();
  	        		// for(UUID uuid : LGUHC.playerList){
  	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
+ 	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+ 	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
  	        		return completions; 
         		}else if(args[0].equals("kill")){
  	        		List<String> completions = new ArrayList<String>();
  	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
+ 	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+ 	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
  	        		return completions; 
         		}else if(args[0].equals("look")){
 	        		List<String> completions = new ArrayList<String>();
 	        		// for(UUID uuid : LGUHC.playerList){
 	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
+	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
 		        	return completions; 
         		}else if(args[0].equals("love")){
  	        		List<String> completions = new ArrayList<String>();
  	        		// for(UUID uuid : LGUHC.playerList){
  	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
+ 	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+ 	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
  	        		return completions; 
         		}else if(args[0].equals("modele")){
  	        		List<String> completions = new ArrayList<String>();
  	        		// for(UUID uuid : LGUHC.playerList){
  	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			if(!Bukkit.getOfflinePlayer(player.getUuid()).getName().equals(sender.getName())){
+ 	        			if(!Bukkit.getOfflinePlayer(player.getUuid()).getName().equals(sender.getName()) && Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1])){
  	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
  	        			}
 	 	       		}
@@ -104,7 +109,8 @@ public class CommandComplet implements TabCompleter {
  	        		List<String> completions = new ArrayList<String>();
  	        		// for(UUID uuid : LGUHC.playerList){
  	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
+ 	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+ 	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
  	        		return completions; 
         		}else if(args[0].equals("revive")){
@@ -112,25 +118,24 @@ public class CommandComplet implements TabCompleter {
  	        		
  	        		// for(UUID uuid : LGUHC.playerList){
  	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			if(player.isOnline() && !(player.getRole() instanceof Spectateur) && player.isAlive() && player.getPlayer().getGameMode().equals(GameMode.SPECTATOR)){
+ 	        			if(player.isOnline() && !(player.getRole() instanceof Spectateur) && player.isAlive() && player.getPlayer().getGameMode().equals(GameMode.SPECTATOR) && Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
  	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
- 	        			}
 	 	       		}
  	        		return completions; 
         		}else if(args[0].equals("transform")){
  	        		List<String> completions = new ArrayList<String>();
  	        		// for(UUID uuid : LGUHC.playerList){
  	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			if(player.isOnline() && !(player.getRole() instanceof Spectateur) && player.isAlive() && player.getPlayer().getGameMode().equals(GameMode.SPECTATOR)){
+ 	        			if(player.isOnline() && !(player.getRole() instanceof Spectateur) && player.isAlive() && player.getPlayer().getGameMode().equals(GameMode.SPECTATOR) && Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
  	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
- 	        			}
 	 	       		}
  	        		return completions; 
         		}else if(args[0].equals("vote")){
 	        		List<String> completions = new ArrayList<String>();
 	        		// for(UUID uuid : LGUHC.playerList){
 	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
-	 	        		completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
+	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
 		        	return completions; 
         		}
@@ -139,7 +144,8 @@ public class CommandComplet implements TabCompleter {
         			List<String> completions = new ArrayList<String>();
         			// for(UUID uuid : LGUHC.playerList){
         			for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
+        				if(Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+        					completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
   	        		return completions; 
          		} 

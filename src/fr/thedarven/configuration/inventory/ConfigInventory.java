@@ -68,12 +68,12 @@ public class ConfigInventory implements Listener {
 				}
 				if(e.getCurrentItem().getType().equals(Material.STAINED_CLAY)){
 					if(e.getClick().equals(ClickType.LEFT)){
-						String name = e.getCurrentItem().getItemMeta().getDisplayName().replaceAll("§b", "").toUpperCase().replaceAll(" ", "");
+						String name = e.getCurrentItem().getItemMeta().getDisplayName().replaceAll("§b", "").toUpperCase().replaceAll(" ", "").replaceAll("'", "");
 						EnumCompo.valueOf(name).addRole();
 						ConfigurationOpenInventory.openCompoInventory(p);
 					}
 					if(e.getClick().equals(ClickType.RIGHT)){
-						String name = e.getCurrentItem().getItemMeta().getDisplayName().replaceAll("§b", "").toUpperCase().replaceAll(" ", "");
+						String name = e.getCurrentItem().getItemMeta().getDisplayName().replaceAll("§b", "").toUpperCase().replaceAll(" ", "").replaceAll("'", "");
 						EnumCompo.valueOf(name).removeRole();
 						ConfigurationOpenInventory.openCompoInventory(p);
 					}
