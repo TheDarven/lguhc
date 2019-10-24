@@ -99,7 +99,30 @@ public class Game {
 					}
 					
 					
-					boolean winLGB = true;
+					
+					for(PlayerLG pl : PlayerLG.getAlivePlayersManagers()){
+						Player p = pl.getPlayer();
+						if(p != null) {
+							int distance = (int) Math.sqrt((Math.pow(p.getLocation().getBlockX(),2)+Math.pow(p.getLocation().getBlockZ(),2)));
+							String message = "Entre "+((int) distance/300)*300+" et "+((int) distance/300+1)*300+" blocks";
+							if(!InventoryRegister.coordonneesvisibles.getValue()) {
+								Title.sendActionBar(p, ChatColor.GOLD+"Distance au centre : "+ChatColor.YELLOW+message);
+							}
+							if(LGUHC.etat.equals(EnumGame.MIDDLEGAME) && LGUHC.timer%5 == 0){
+								pl.getRole().startRole(pl);
+								pl.getRole().verifRole(pl);
+								pl.getRole().endRole(pl);
+								if(LGUHC.timer < InventoryRegister.votes.getValue()*60 && pl.isAlive() && pl.getRole().getActive()){
+									if(pl.getPlayer().getMaxHealth() != pl.getRole().getMaxhealth()){
+										pl.getPlayer().setMaxHealth(pl.getRole().getMaxhealth());
+									}
+								}
+							}
+						}
+					}
+					
+					
+					/* boolean winLGB = true;
 					boolean winLG = true;
 					boolean winLove = true;
 					boolean winVillage = true;
@@ -160,7 +183,7 @@ public class Game {
 					}else if(winAssassin) {
 						Bukkit.broadcastMessage("§6[LGUHC] L'art de l'assassinat a très bien été représenté dans cette partie et à empêcher les deux autres camps de gagner !");
 						endGame();
-					}
+					} */
 					
 					int nextTime = 0;
 					for(int i = LGUHC.timer+1; i<LGUHC.timer+600; i++){

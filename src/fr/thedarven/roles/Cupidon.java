@@ -71,7 +71,7 @@ public class Cupidon extends RolesBis<Boolean>{
 	@Override
 	public void endRole(PlayerLG pl) {	
 		// CHOISIT UN COUPLE (SECU)
-		if(LGUHC.timer == InventoryRegister.annonceroles.getValue()*60+301 && !asCouple()){
+		if(LGUHC.timer == InventoryRegister.annonceroles.getValue()*60+300 && !asCouple()){
 			List<PlayerLG> list = PlayerLG.getAlivePlayersManagers();
 			
 			List<PlayerLG> playerList = new ArrayList<PlayerLG>();

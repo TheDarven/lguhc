@@ -30,7 +30,7 @@ public class Villageois extends RolesBis<String>{
 	@Override
 	public void messageRole(PlayerLG pl) {
 		if(pl.isOnline()){
-			pl.getPlayer().sendMessage("§6[LGUHC] §9Tu es Simple Villageois, ton but est de gagner avec le village. Tu possèdes un bonus de §b5 coeurs suplémentaires§9.");
+			pl.getPlayer().sendMessage("§6[LGUHC] §9Tu es Simple Villageois, ton but est de gagner avec le village. Tu possèdes un bonus de §b3 coeurs suplémentaires§9.");
 			super.messageRole(pl);
 		}
 	}

@@ -50,7 +50,7 @@ public class MontreurDours extends RolesBis<Boolean>{
 			if(pl.isOnline() && pl.isAlive() && active){
 				int number = 0;
 				for(PlayerLG p : PlayerLG.getAlivePlayersManagers()){
-					if(p.isOnline() && p.getPlayer() != pl && p.isAlive()){
+					if(p.isOnline() && p.getPlayer() != pl && p.isAlive() && pl.getRole().getInfecte()){
 						if(p.getPlayer().getLocation().distance(pl.getPlayer().getLocation()) <= 50){
 							number++;
 						}

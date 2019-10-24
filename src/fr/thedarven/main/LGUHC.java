@@ -57,6 +57,14 @@ public class LGUHC extends JavaPlugin {
 	public static boolean sqlConnect = false;
 	public static String succes_password;
 	
+	
+	public static boolean winLGB = true;
+	public static boolean winLG = true;
+	public static boolean winLove = true;
+	public static boolean winVillage = true;
+	public static boolean winAssassin = true;
+	
+	
 	// public static ArrayList<UUID> playerList = new ArrayList<UUID>();
 	public static ArrayList<RolesBis<?>> composition = new ArrayList<RolesBis<?>>();
 	public static Votes votes = new Votes();
