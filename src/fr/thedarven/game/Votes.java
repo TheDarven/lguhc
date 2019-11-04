@@ -21,13 +21,13 @@ public class Votes {
 	private PlayerLG playerVote;
 	private PlayerLG playerHealth;
 	private static Map<Player, PlayerLG> voteList;
-	private ArrayList<Player> playerList;
+	private ArrayList<PlayerLG> playerList;
 	
 	public Votes(){
 		playerVote = null;
 		playerHealth = null;
 		voteList = new HashMap<>();
-		playerList = new ArrayList<Player>();
+		playerList = new ArrayList<PlayerLG>();
 	}
 	
 	public void action(){
@@ -86,30 +86,45 @@ public class Votes {
 			
 			
 			// JOUEUR ONLINE
-			if(LGUHC.timer%1200 < 360 && playerVote != null && playerVote.isOnline() && playerVote.isAlive()){ // Timer en cours
-				playerVote.getPlayer().playSound(playerVote.getPlayer().getLocation(), Sound.FALL_BIG , 1, 1);
-				playerVote.getPlayer().setMaxHealth(playerVote.getRole().getMaxhealth()/2);
+			if(playerVote != null && LGUHC.timer%1200 < 360 && playerVote.isOnline() && playerVote.isAlive()){ // Timer en cours
+				Player player = playerVote.getPlayer();
+				player.playSound(player.getLocation(), Sound.FALL_BIG , 1, 1);
+				if(playerVote.getRole().getActive())
+					player.setMaxHealth(playerVote.getRole().getMaxhealth()/2);
+				else
+					player.setMaxHealth(10.0);
 				playerHealth = playerVote;
 				playerVote = null;
 			}
 			if(LGUHC.timer%1200 == 360){ // Fin du timer
-				if(playerHealth != null && playerHealth.isOnline()){
-					playerHealth.getPlayer().setMaxHealth(playerHealth.getRole().getMaxhealth());
+				if(playerVote != null){
+					if(!playerList.contains(playerVote))
+						playerList.add(playerVote);
+					playerVote = null;
+				}else {
+					Player p = playerHealth.getPlayer();
+					if(playerHealth != null && p != null)
+						removeEffect(p, playerHealth);
 				}
 				playerVote = null;
 				playerHealth = null;
-				voteList = new HashMap<>();
+				voteList = new HashMap<>();	
 			}
 			
-			
-			// JOUEUR OFFLINE
-			if(LGUHC.timer%1200 == 360){ // Fin du timer
-				if(playerVote != null){
-					playerList.add(playerVote.getPlayer());
-					playerVote = null;
-				}
+			for(int i=0; i<playerList.size(); i++) {
+				Player p = playerList.get(i).getPlayer();
+				if(p != null) {
+					if(playerList.get(i).getRole().getActive())
+						p.setMaxHealth(playerList.get(i).getRole().getMaxhealth()/2);
+					else
+						p.setMaxHealth(10.0);
+					removeEffect(p, playerList.get(i));
+					playerList.remove(i);
+					i--;
+				}	
 			}
-			for(int i = 0; i<playerList.size(); i++){ // Après le timer
+			
+			/* for(int i = 0; i<playerList.size(); i++){ // Après le timer
 				if(PlayerLG.getPlayerManager(playerList.get(i).getUniqueId()).isOnline()){
 					if(playerList.get(i).getHealth() > (PlayerLG.getPlayerManager(playerList.get(i).getUniqueId()).getRole().getMaxhealth()/2)){
 						playerVote.getPlayer().playSound(playerVote.getPlayer().getLocation(), Sound.FALL_BIG , 1, 1);
@@ -118,29 +133,22 @@ public class Votes {
 					playerList.remove(i);
 					return;
 				}
-			}
-			for(PlayerLG pl : PlayerLG.getAlivePlayersManagers()){
-				if(playerHealth != null){
-					if(pl.isOnline() && !pl.equals(PlayerLG.getPlayerManager(playerHealth.getUuid()))){
-						if(pl.getPlayer().getMaxHealth() != pl.getRole().getMaxhealth() && pl.getRole().getActive()){
-							pl.getPlayer().setMaxHealth(pl.getRole().getMaxhealth());
-						}
-					}
-				}else{
-					if(pl.isOnline()){
-						if(pl.getPlayer().getMaxHealth() != pl.getRole().getMaxhealth() && pl.getRole().getActive()){
-							pl.getPlayer().setMaxHealth(pl.getRole().getMaxhealth());
-						}
-					}
-				}
-				
-				if(pl.isOnline() && !pl.getRole().getActive() && getPlayer() != pl){
-					if(pl.getPlayer().getMaxHealth() != pl.getRole().getMaxhealth()){
-						pl.getPlayer().setMaxHealth(pl.getRole().getMaxhealth());
-					}
-				}
+			} */
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				PlayerLG pl = PlayerLG.getPlayerManager(p.getUniqueId());
+				if(playerHealth != pl && playerVote != pl)
+					removeEffect(p, pl);
 			}
 		}
+	}
+	
+	private void removeEffect(Player p, PlayerLG pl) {
+		if(pl.getRole().getActive()) {
+			if(p.getMaxHealth() != pl.getRole().getMaxhealth())
+				pl.getPlayer().setMaxHealth(pl.getRole().getMaxhealth());
+		}else
+			if(p.getMaxHealth() != 20.0)
+				pl.getPlayer().setMaxHealth(20.0);
 	}
 	
 	public void addVote(Player p, PlayerLG pl){

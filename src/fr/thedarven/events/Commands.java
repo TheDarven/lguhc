@@ -13,6 +13,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import fr.thedarven.configuration.builders.InventoryRegister;
 import fr.thedarven.game.Teleportation;
+import fr.thedarven.game.enums.EnumCupidonState;
 import fr.thedarven.game.enums.EnumGame;
 import fr.thedarven.game.enums.EnumTime;
 import fr.thedarven.main.LGUHC;
@@ -96,7 +97,13 @@ public class Commands implements CommandExecutor {
 				}
 				
 				if(args.length >= 2 && pl.getRole() instanceof Soeur && pl.getRole().verifCommand(pl)){
+					Soeur soeur = ((Soeur) pl.getRole());
 					if(args[0].equals("chat") && args[1] != null){
+						if(soeur.getPouvoir() > LGUHC.timer-600) {
+							p.sendMessage("§6[LGUHC]§c Tu as déjà envoyé un message il y a moins de 10 minutes.");
+							return false;
+						}
+						
 						String message = "";
 						for(int i=1; i<args.length; i++) {
 							message += args[i]+" ";
@@ -105,8 +112,27 @@ public class Commands implements CommandExecutor {
 							p.sendMessage("§6[LGUHC]§c Le message est trop long pour être enregistré (maximum 100 caractères).");
 							return false;
 						}
-						((Soeur) pl.getRole()).setPouvoir(message);
-						p.sendMessage("§6[LGUHC]§a Ton message a été enregistré avec succès, ta soeur le recevra bientôt.");
+						
+						for(PlayerLG player : PlayerLG.getAllPlayersManagers()) {
+							if(player.getRole() instanceof Soeur) {
+								if(!pl.equals(player)) {
+									Player reciever = player.getPlayer();
+									if(reciever != null) {
+										if(player.isAlive()) {
+											reciever.sendMessage("§6[LGUHC] §7§o("+p.getName()+") §r§d"+message);
+											soeur.setPouvoir(LGUHC.timer);
+											p.sendMessage("§6[LGUHC]§a Ton message a été envoyé avec succès.");	
+										}else {
+											p.sendMessage("§6[LGUHC]§c Votre moitié a littéralement quitté notre monde, paix à son âme.");
+										}
+									}else {
+										p.sendMessage("§6[LGUHC]§c Ta soeur n'est pas connecté.");
+									}
+									return true;
+								}
+							}
+						}
+						
 					}
 				}
 				if(args.length >= 2 && pl.getRole() instanceof Renard && pl.getRole().verifCommand(pl)){
@@ -164,21 +190,20 @@ public class Commands implements CommandExecutor {
 						PlayerLG.getPlayerManager(playerInGame(args[1])).setCouple(true);
 						PlayerLG.getPlayerManager(playerInGame(args[2])).setCouple(true);
 						
+						((Cupidon) pl.getRole()).setPouvoir(EnumCupidonState.MESSAGE);
+						
 						((Cupidon) pl.getRole()).messageCouple(pl);
 					}
 				}
-				if(args.length >= 1 && pl.getRole() instanceof EnfantSauvage && pl.getRole().verifCommand(pl)){
-					if(args[0].equals("modele") && ((EnfantSauvage) pl.getRole()).getPouvoir() == null && playerInGame(args[1]) != null && PlayerLG.getPlayerManager(playerInGame(args[1])).isAlive()){
-						p.sendMessage("§6[LGUHC]§e Votre modèle est "+Bukkit.getOfflinePlayer(((EnfantSauvage) pl.getRole()).getPouvoir()).getName()+". Si il meurt, vous rejoindrez directement le camp des Loups-Garous.");
-					}
-				}
 				if(args.length >= 2 && pl.getRole() instanceof EnfantSauvage && pl.getRole().verifCommand(pl)){
-					if(args[0].equals("modele") && ((EnfantSauvage) pl.getRole()).getPouvoir() == null && playerInGame(args[1]) != null){
-						if(PlayerLG.getPlayerManager(playerInGame(args[1])).getRole() instanceof EnfantSauvage || PlayerLG.getPlayerManager(playerInGame(args[1])).getRole() instanceof Spectateur || !PlayerLG.getPlayerManager(playerInGame(args[1])).isAlive()){
+					EnfantSauvage role = (EnfantSauvage) pl.getRole();
+					UUID selectPlayer = playerInGame(args[1]);
+					if(args[0].equals("modele") && role.getPouvoir() == null && selectPlayer != null){
+						if(PlayerLG.getPlayerManager(selectPlayer).getRole() instanceof EnfantSauvage || PlayerLG.getPlayerManager(selectPlayer).getRole() instanceof Spectateur || !PlayerLG.getPlayerManager(selectPlayer).isAlive()){
 							return false;
 						}
-						((EnfantSauvage) pl.getRole()).setPouvoir(playerInGame(args[1]));
-						p.sendMessage("§6[LGUHC]§a Votre modèle ("+Bukkit.getOfflinePlayer(playerInGame(args[1])).getName()+") a bien été enregistré. S'il vient à mourir, vous rejoindrez le camp des Loups-Garous.");
+						role.setPouvoir(selectPlayer);
+						p.sendMessage("§6[LGUHC]§a Votre modèle ("+Bukkit.getOfflinePlayer(selectPlayer).getName()+") a bien été enregistré. S'il vient à mourir, vous rejoindrez le camp des Loups-Garous.");
 					}
 				}
 				if(args.length >= 1 && args[0].equals("players")){
@@ -215,8 +240,9 @@ public class Commands implements CommandExecutor {
 							return false;
 						}
 						((Salvateur) pl.getRole()).getPouvoir().set(1, playerInGame(args[1]));
-						PlayerLG.getPlayerManager(playerInGame(args[1])).getRole().addEffect(new EffetClass(EnumTime.DAY, new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40000, 0), false, false));
-						PlayerLG.getPlayerManager(playerInGame(args[1])).getRole().addEffect(new EffetClass(EnumTime.NIGHT, new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40000, 0), false, false));
+						PlayerLG effectPlayer = PlayerLG.getPlayerManager(playerInGame(args[1]));
+						effectPlayer.getRole().addEffect(new EffetClass(EnumTime.DAY, new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40000, 0), false, false), effectPlayer);
+						effectPlayer.getRole().addEffect(new EffetClass(EnumTime.NIGHT, new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40000, 0), false, false), effectPlayer);
 						p.sendMessage("§6[LGUHC]§a Le joueur "+Bukkit.getOfflinePlayer(playerInGame(args[1])).getName()+" a été protégé par ta volonté.");
 						Player pSelect = PlayerLG.getPlayerManager(playerInGame(args[1])).getPlayer();
 						if(pSelect != null)

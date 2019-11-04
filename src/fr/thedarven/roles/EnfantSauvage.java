@@ -35,6 +35,8 @@ public class EnfantSauvage extends RolesBis<UUID>{
 	public void messageRole(PlayerLG pl) {
 		if(pl.isOnline()){
 			pl.getPlayer().sendMessage("§6[LGUHC] §9Tu es l’Enfant sauvage, ton but est de gagner avec le village. En début de partie, tu disposes de 5 minutes pour choisir un modèle à l’aide la commande §b/lg modele <pseudo>§9. Si ce dernier meurt, tu deviendras un Loup-garous.");
+			if(!infecte && pouvoir != null)
+				pl.getPlayer().sendMessage("§9Ton modèle est "+Bukkit.getOfflinePlayer(pouvoir).getName()+".");
 			super.messageRole(pl);
 		}
 	}
@@ -54,11 +56,9 @@ public class EnfantSauvage extends RolesBis<UUID>{
 	@Override
 	public void endRole(PlayerLG pl) {
 		// CHOISIT UN MODELE (SECU)
-		if(LGUHC.timer == InventoryRegister.annonceroles.getValue()*60+301 && pouvoir == null){
-			List<PlayerLG> list = PlayerLG.getAlivePlayersManagers();
-			
+		if(LGUHC.timer == InventoryRegister.annonceroles.getValue()*60+300 && pouvoir == null){		
 			List<PlayerLG> playerList = new ArrayList<PlayerLG>();
-			for(PlayerLG p : list){
+			for(PlayerLG p : PlayerLG.getAlivePlayersManagers()){
 				if(!(p.getRole() instanceof EnfantSauvage)){
 					playerList.add(p);
 				}

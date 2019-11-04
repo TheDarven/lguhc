@@ -22,12 +22,12 @@ import net.md_5.bungee.api.ChatColor;
 public class OptionNumeric extends InventoryGUI{
 	
 	protected int min;
-	private int max;
+	protected int max;
 	protected int value;
-	private int pas;
+	protected int pas;
 	private String afterName;
 	private int diviseur;
-	private int morePas;
+	protected int morePas;
 	
 	public OptionNumeric(String pName, String pDescription, Material pItem, InventoryGUI pParent, int pPosition, int pMin, int pMax, int pValue, int pPas, int pMorePas, String pAfterName, int pDiviseur) {
 		super(pName, pDescription, 1, pItem, pParent, pPosition);
@@ -172,7 +172,7 @@ public class OptionNumeric extends InventoryGUI{
 		this.inventory.setItem(5, plus);
 	}
 
-	private void reloadItem() {
+	protected void reloadItem() {
 		// Pour ouvrir l'inventaire
 		String name = ChatColor.BOLD+""+ChatColor.YELLOW+this.getName()+ChatColor.RESET+" ► "+ChatColor.GOLD+"Désactivé";
 		if(this.value > 0) {

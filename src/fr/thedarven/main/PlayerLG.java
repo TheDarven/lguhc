@@ -178,4 +178,10 @@ public class PlayerLG{
 		List<PlayerLG> list = new ArrayList<PlayerLG>(playerManagerHashMap.values());
 		return list;
 	}
+	
+	public boolean equals(Object o) {
+		if(o instanceof PlayerLG)
+			return ((PlayerLG)o).getUuid() == uuid;
+		return false;
+	}
 }

@@ -56,8 +56,9 @@ public class Salvateur extends RolesBis<ArrayList<UUID>> {
 		super.verifRole(pl);
 		if(LGUHC.etat.equals(EnumGame.MIDDLEGAME) && LGUHC.timer%1200 == 0){
 			if(pouvoir.get(1) != null) {
-				PlayerLG.getPlayerManager(pouvoir.get(1)).getRole().removeEffect(new EffetClass(EnumTime.DAY, new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40000, 0), false, false));
-				PlayerLG.getPlayerManager(pouvoir.get(1)).getRole().removeEffect(new EffetClass(EnumTime.NIGHT, new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40000, 0), false, false));
+				PlayerLG affectPlayer = PlayerLG.getPlayerManager(pouvoir.get(1));
+				affectPlayer.getRole().removeEffect(new EffetClass(EnumTime.DAY, new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40000, 0), false, false), affectPlayer);
+				affectPlayer.getRole().removeEffect(new EffetClass(EnumTime.NIGHT, new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40000, 0), false, false), affectPlayer);
 			}
 			pouvoir.set(0, pouvoir.get(1));
 			pouvoir.set(1, null);

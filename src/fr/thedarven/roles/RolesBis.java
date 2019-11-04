@@ -25,7 +25,6 @@ import fr.thedarven.game.enums.EnumGame;
 import fr.thedarven.main.LGUHC;
 import fr.thedarven.main.PlayerLG;
 import fr.thedarven.utils.SqlRequest;
-import fr.thedarven.utils.Title;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -112,6 +111,19 @@ public abstract class RolesBis<T> implements Listener{
 	
 	// LES EFFETS
 	public void verifRole(PlayerLG pl) {
+		if(LGUHC.cycle.getAtSecond(LGUHC.timer-1) != LGUHC.cycle.getAtSecond(LGUHC.timer) || LGUHC.timer == InventoryRegister.annonceroles.getValue()*60) {
+			applyEffects(pl);
+		}
+	}
+	
+	abstract public void startRole(PlayerLG pl);
+	abstract public void endRole(PlayerLG pl);
+	
+	public boolean verifCommand(PlayerLG pl) {
+		return true;
+	}
+	
+	public void applyEffects(PlayerLG pl) {
 		if(pl.isOnline() && pl.isAlive() && pl.getRole().getActive()) {
 			
 			// SELECTIONE LES EFFETS NORMALEMENT ACTIFS
@@ -152,26 +164,19 @@ public abstract class RolesBis<T> implements Listener{
 		}
 	}
 	
-	abstract public void startRole(PlayerLG pl);
-	abstract public void endRole(PlayerLG pl);
-	
-	public boolean verifCommand(PlayerLG pl) {
-		return true;
-	}
-	
-	
-	
-	public void removeEffect(EffetClass effectValue) {
+	public void removeEffect(EffetClass effectValue, PlayerLG pl) {
 		for(int i=0; i<effect.size(); i++) {
 			if(effect.get(i).getPeriode().equals(effectValue.getPeriode()) && effect.get(i).getPotion().getType().equals(effectValue.getPotion().getType()) && effect.get(i).getPotion().getAmplifier() == effectValue.getPotion().getAmplifier() && effect.get(i).getNeedActive() == effectValue.getNeedActive() && effect.get(i).getNeedActive() == effectValue.getNeedInfecte()) {
 				effect.remove(i);
 				return;
 			}
 		}
+		applyEffects(pl);
 	}
 	
-	public void addEffect(EffetClass effectValue) {
+	public void addEffect(EffetClass effectValue, PlayerLG pl) {
 		effect.add(effectValue);
+		applyEffects(pl);
 	}
 	
 	public void playerDeath(final Player p, final UUID pKill){
@@ -282,7 +287,9 @@ public abstract class RolesBis<T> implements Listener{
 							if((Integer) pm.getPreDeath().get(0) == -1){
 
 								// TELEPORT
-								p.sendMessage("§6[LGUHC]§e La sorcière vient de vous ressusciter.");					
+								p.sendMessage("§6[LGUHC]§e La sorcière vient de vous ressusciter.");
+								
+								detectVictory();
 							}
 							
 							// PERE DES LOUPS QUI REVIVE
@@ -305,6 +312,8 @@ public abstract class RolesBis<T> implements Listener{
 										player.sendMessage("§6[LGUHC]§c "+p.getName()+" a rejoint le camp des Loups-Garous.");
 									}
 								}
+								
+								detectVictory();
 							}
 							pm.setPreDeath(0, 0);
 							p.setFallDistance(0);
@@ -560,81 +569,11 @@ public abstract class RolesBis<T> implements Listener{
 				}
 			}
 			
-			/* Verif victoire */
-			
-			LGUHC.winLGB = true;
-			LGUHC.winLG = true;
-			LGUHC.winLove = true;
-			LGUHC.winVillage = true;
-			LGUHC.winAssassin = true;
-			
-			for(PlayerLG pl : PlayerLG.getAlivePlayersManagers()){
-				/* if(pl.isOnline()) {
-					int distance = (int) Math.sqrt((Math.pow(pl.getPlayer().getLocation().getBlockX(),2)+Math.pow(pl.getPlayer().getLocation().getBlockZ(),2)));
-					String message = "Entre "+((int) distance/300)*300+" et "+((int) distance/300+1)*300+" blocks";
-					if(!InventoryRegister.coordonneesvisibles.getValue()) {
-						Title.sendActionBar(pl.getPlayer(), ChatColor.GOLD+"Distance au centre : "+ChatColor.YELLOW+message);
-					}
-					if(LGUHC.etat.equals(EnumGame.MIDDLEGAME)){
-						pl.getRole().startRole(pl);
-						pl.getRole().verifRole(pl);
-						pl.getRole().endRole(pl);
-						if(LGUHC.timer < InventoryRegister.votes.getValue()*60 && pl.isOnline() && pl.isAlive() && pl.getRole().getActive()){
-							if(pl.getPlayer().getMaxHealth() != pl.getRole().getMaxhealth()){
-								pl.getPlayer().setMaxHealth(pl.getRole().getMaxhealth());
-							}
-						}
-					}
-				} */
-
-				if(!(pl.getRole() instanceof LoupBlanc)){
-					LGUHC.winLGB = false;
-				}
-				if(!pl.getRole().getInfecte() || pl.getRole() instanceof LoupBlanc){
-					LGUHC.winLG = false;
-				}
-				if(!pl.isCouple() && !(pl.getRole() instanceof Cupidon)){
-					LGUHC.winLove = false;
-				}
-				if(pl.getRole().getInfecte() || pl.getRole() instanceof Assassin || pl.getRole() instanceof PetitAssassin){
-					LGUHC.winVillage = false;
-				}
-				if(!(pl.getRole() instanceof Assassin) && !(pl.getRole() instanceof PetitAssassin)){
-					LGUHC.winAssassin = false;
-				}
-			}
-			if(LGUHC.winLGB){
-				Bukkit.broadcastMessage("§6[LGUHC] Le Loup garou blanc à sû trahir tous le village !");
-				Game.endGame();
-				LGUHC.winLG = false;
-			}else if(LGUHC.winLG){
-				Bukkit.broadcastMessage("§6[LGUHC] Le camp des Loups-Garous remporte la victoire !");
-				Game.endGame();
-				LGUHC.winLove = false;
-				LGUHC.winVillage = false;
-				LGUHC.winAssassin = false;
-			}else if(LGUHC.winLove){
-				Bukkit.broadcastMessage("§6[LGUHC] L'amour a été le vainqueur de la partie.");
-				Game.endGame();
-				LGUHC.winVillage = false;
-				LGUHC.winAssassin = false;
-			}else if(LGUHC.winVillage){
-				Bukkit.broadcastMessage("§6[LGUHC] Le village a sû traquer et éliminer chacun des traîtres qui le composait, félicitation à lui !");
-				Game.endGame();
-				LGUHC.winAssassin = false;
-			}else if(LGUHC.winAssassin) {
-				Bukkit.broadcastMessage("§6[LGUHC] L'art de l'assassinat a très bien été représenté dans cette partie et à empêcher les deux autres camps de gagner !");
-				Game.endGame();
-			}
-			
-			
-			
-			
-			
-			for(PlayerLG player: PlayerLG.getAllPlayersManagers()){
+			for(PlayerLG player: PlayerLG.getAlivePlayersManagers()){
 				if(player.getRole() instanceof EnfantSauvage){
-					if(((EnfantSauvage) player.getRole()).getPouvoir().equals(uuid)){
-						player.getRole().setInfecte(player.getUuid(), true);
+					EnfantSauvage role = (EnfantSauvage) player.getRole();
+					if(role.getPouvoir() != null && role.getPouvoir().equals(uuid) && !role.getInfecte()){
+						role.setInfecte(player.getUuid(), true);
 						if(player.isOnline()){
 							player.getPlayer().sendMessage("§6[LGUHC]§e Votre modèle vient de mourrir, vous rejoignez donc le camp des Loups-Garous.");
 							String pseudo = "§6[LGUHC] §4Voici la liste des loups-garous :  §c";
@@ -652,9 +591,82 @@ public abstract class RolesBis<T> implements Listener{
 							}
 						}
 					}
+					break;
 				}
 			}
 			
+			if(!pm.isCouple() || couple)
+				detectVictory();
+			
+		}
+	}
+	
+	private static void detectVictory() {
+		/* Verif victoire */
+		
+		LGUHC.winLGB = true;
+		LGUHC.winLG = true;
+		LGUHC.winLove = true;
+		LGUHC.winVillage = true;
+		LGUHC.winAssassin = true;
+		
+		for(PlayerLG pl : PlayerLG.getAlivePlayersManagers()){
+			/* if(pl.isOnline()) {
+				int distance = (int) Math.sqrt((Math.pow(pl.getPlayer().getLocation().getBlockX(),2)+Math.pow(pl.getPlayer().getLocation().getBlockZ(),2)));
+				String message = "Entre "+((int) distance/300)*300+" et "+((int) distance/300+1)*300+" blocks";
+				if(!InventoryRegister.coordonneesvisibles.getValue()) {
+					Title.sendActionBar(pl.getPlayer(), ChatColor.GOLD+"Distance au centre : "+ChatColor.YELLOW+message);
+				}
+				if(LGUHC.etat.equals(EnumGame.MIDDLEGAME)){
+					pl.getRole().startRole(pl);
+					pl.getRole().verifRole(pl);
+					pl.getRole().endRole(pl);
+					if(LGUHC.timer < InventoryRegister.votes.getValue()*60 && pl.isOnline() && pl.isAlive() && pl.getRole().getActive()){
+						if(pl.getPlayer().getMaxHealth() != pl.getRole().getMaxhealth()){
+							pl.getPlayer().setMaxHealth(pl.getRole().getMaxhealth());
+						}
+					}
+				}
+			} */
+
+			if(!(pl.getRole() instanceof LoupBlanc)){
+				LGUHC.winLGB = false;
+			}
+			if(!pl.getRole().getInfecte() || pl.getRole() instanceof LoupBlanc){
+				LGUHC.winLG = false;
+			}
+			if(!pl.isCouple() && !(pl.getRole() instanceof Cupidon)){
+				LGUHC.winLove = false;
+			}
+			if(pl.getRole().getInfecte() || pl.getRole() instanceof Assassin || pl.getRole() instanceof PetitAssassin){
+				LGUHC.winVillage = false;
+			}
+			if(!(pl.getRole() instanceof Assassin) && !(pl.getRole() instanceof PetitAssassin)){
+				LGUHC.winAssassin = false;
+			}
+		}
+		if(LGUHC.winLGB){
+			Bukkit.broadcastMessage("§6[LGUHC] Le Loup garou blanc à sû trahir tous le village !");
+			Game.endGame();
+			LGUHC.winLG = false;
+		}else if(LGUHC.winLG){
+			Bukkit.broadcastMessage("§6[LGUHC] Le camp des Loups-Garous remporte la victoire !");
+			Game.endGame();
+			LGUHC.winLove = false;
+			LGUHC.winVillage = false;
+			LGUHC.winAssassin = false;
+		}else if(LGUHC.winLove){
+			Bukkit.broadcastMessage("§6[LGUHC] L'amour a été le vainqueur de la partie.");
+			Game.endGame();
+			LGUHC.winVillage = false;
+			LGUHC.winAssassin = false;
+		}else if(LGUHC.winVillage){
+			Bukkit.broadcastMessage("§6[LGUHC] Le village a sû traquer et éliminer chacun des traîtres qui le composait, félicitation à lui !");
+			Game.endGame();
+			LGUHC.winAssassin = false;
+		}else if(LGUHC.winAssassin) {
+			Bukkit.broadcastMessage("§6[LGUHC] L'art de l'assassinat a très bien été représenté dans cette partie et à empêcher les deux autres camps de gagner !");
+			Game.endGame();
 		}
 	}
 }

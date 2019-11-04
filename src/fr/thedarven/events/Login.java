@@ -74,6 +74,9 @@ public class Login implements Listener {
 		}else if(LGUHC.etat.equals(EnumGame.TELEPORTATION) || LGUHC.etat.equals(EnumGame.STARTGAME) || LGUHC.etat.equals(EnumGame.MIDDLEGAME)) {
 			if(pm.getRole() instanceof Spectateur) {
 				p.setGameMode(GameMode.SPECTATOR);
+			}else {
+				if(LGUHC.etat != EnumGame.TELEPORTATION)
+					pm.getRole().applyEffects(pm);
 			}
 			if(!InventoryRegister.coordonneesvisibles.getValue()) {
 				DisableF3.disableF3(p);
@@ -144,7 +147,7 @@ public class Login implements Listener {
 			p.removePotionEffect(effect.getType());
 		}
 		DisableF3.enableF3(p);
-		
+		Title.sendTabHF(p, "§6LG UHC\n\n§eTimer : §f00:00\n", "\n§2Plugin par TheDarven\n§adiscord.gg/HZyS5T7");
 		/* ItemStack coffre = new ItemStack(Material.CHEST, 1);
 		ItemMeta coffreM = coffre.getItemMeta();
 		coffreM.setDisplayName("§ePersonnalisation");

@@ -59,7 +59,7 @@ public class PetiteFille extends RolesBis<Boolean>{
 				pl.getPlayer().sendMessage("§6[LGUHC]§e Les joueurs à moins de 100 blocs de vous : ");
 				String message = "§e";
 				for(PlayerLG p : PlayerLG.getAlivePlayersManagers()){
-					if(p.isOnline() && p.getPlayer() != pl && p.isAlive()){
+					if(p != pl && p.isAlive() && p.isOnline()){
 						if(p.getPlayer().getLocation().distance(pl.getPlayer().getLocation()) <= 100){
 							message += p.getPlayer().getName()+"   ";
 						}

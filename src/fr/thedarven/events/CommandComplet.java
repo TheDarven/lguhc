@@ -76,7 +76,7 @@ public class CommandComplet implements TabCompleter {
         		}else if(args[0].equals("kill")){
  	        		List<String> completions = new ArrayList<String>();
  	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+ 	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
  	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
  	        		return completions; 
@@ -84,7 +84,7 @@ public class CommandComplet implements TabCompleter {
 	        		List<String> completions = new ArrayList<String>();
 	        		// for(UUID uuid : LGUHC.playerList){
 	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
-	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
 	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
 		        	return completions; 
@@ -92,7 +92,7 @@ public class CommandComplet implements TabCompleter {
  	        		List<String> completions = new ArrayList<String>();
  	        		// for(UUID uuid : LGUHC.playerList){
  	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+ 	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
  	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
  	        		return completions; 
@@ -100,7 +100,7 @@ public class CommandComplet implements TabCompleter {
  	        		List<String> completions = new ArrayList<String>();
  	        		// for(UUID uuid : LGUHC.playerList){
  	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			if(!Bukkit.getOfflinePlayer(player.getUuid()).getName().equals(sender.getName()) && Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1])){
+ 	        			if(!Bukkit.getOfflinePlayer(player.getUuid()).getName().equals(sender.getName()) && Bukkit.getOfflinePlayer(player.getUuid()).getName().toLowerCase().startsWith(args[args.length-1].toLowerCase())){
  	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
  	        			}
 	 	       		}
@@ -109,7 +109,7 @@ public class CommandComplet implements TabCompleter {
  	        		List<String> completions = new ArrayList<String>();
  	        		// for(UUID uuid : LGUHC.playerList){
  	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+ 	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
  	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
  	        		return completions; 
@@ -118,7 +118,7 @@ public class CommandComplet implements TabCompleter {
  	        		
  	        		// for(UUID uuid : LGUHC.playerList){
  	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			if(player.isOnline() && !(player.getRole() instanceof Spectateur) && player.isAlive() && player.getPlayer().getGameMode().equals(GameMode.SPECTATOR) && Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+ 	        			if(player.isOnline() && !(player.getRole() instanceof Spectateur) && player.isAlive() && player.getPlayer().getGameMode().equals(GameMode.SPECTATOR) && Bukkit.getOfflinePlayer(player.getUuid()).getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
  	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
  	        		return completions; 
@@ -126,7 +126,7 @@ public class CommandComplet implements TabCompleter {
  	        		List<String> completions = new ArrayList<String>();
  	        		// for(UUID uuid : LGUHC.playerList){
  	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
- 	        			if(player.isOnline() && !(player.getRole() instanceof Spectateur) && player.isAlive() && player.getPlayer().getGameMode().equals(GameMode.SPECTATOR) && Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+ 	        			if(player.isOnline() && !(player.getRole() instanceof Spectateur) && player.isAlive() && player.getPlayer().getGameMode().equals(GameMode.SPECTATOR) && Bukkit.getOfflinePlayer(player.getUuid()).getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
  	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
  	        		return completions; 
@@ -134,7 +134,7 @@ public class CommandComplet implements TabCompleter {
 	        		List<String> completions = new ArrayList<String>();
 	        		// for(UUID uuid : LGUHC.playerList){
 	        		for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
-	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+	        			if(Bukkit.getOfflinePlayer(player.getUuid()).getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
 	        				completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
 		        	return completions; 
@@ -144,7 +144,7 @@ public class CommandComplet implements TabCompleter {
         			List<String> completions = new ArrayList<String>();
         			// for(UUID uuid : LGUHC.playerList){
         			for(PlayerLG player : PlayerLG.getAlivePlayersManagers()){
-        				if(Bukkit.getOfflinePlayer(player.getUuid()).getName().startsWith(args[args.length-1]))
+        				if(Bukkit.getOfflinePlayer(player.getUuid()).getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
         					completions.add(Bukkit.getOfflinePlayer(player.getUuid()).getName());
 	 	       		}
   	        		return completions; 

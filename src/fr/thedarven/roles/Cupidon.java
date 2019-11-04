@@ -14,20 +14,21 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import fr.thedarven.configuration.builders.InventoryRegister;
+import fr.thedarven.game.enums.EnumCupidonState;
 import fr.thedarven.game.enums.EnumGame;
 import fr.thedarven.game.enums.EnumTime;
 import fr.thedarven.main.LGUHC;
 import fr.thedarven.main.PlayerLG;
 import fr.thedarven.utils.SqlRequest;
 
-public class Cupidon extends RolesBis<Boolean>{
+public class Cupidon extends RolesBis<EnumCupidonState>{
 	
 	public Cupidon() {
 		this.active = true;
 		this.infecte = false;
 		this.kit = true;
 		this.name = "Cupidon";
-		this.pouvoir = false;
+		this.pouvoir = EnumCupidonState.SELECT;
 		this.taupelist = false;
 		this.maxhealth = 20.0;
 		
@@ -71,7 +72,8 @@ public class Cupidon extends RolesBis<Boolean>{
 	@Override
 	public void endRole(PlayerLG pl) {	
 		// CHOISIT UN COUPLE (SECU)
-		if(LGUHC.timer == InventoryRegister.annonceroles.getValue()*60+300 && !asCouple()){
+		if(LGUHC.timer == InventoryRegister.annonceroles.getValue()*60+300 && pouvoir == EnumCupidonState.SELECT){
+			pouvoir = EnumCupidonState.MESSAGE;
 			List<PlayerLG> list = PlayerLG.getAlivePlayersManagers();
 			
 			List<PlayerLG> playerList = new ArrayList<PlayerLG>();
@@ -90,39 +92,30 @@ public class Cupidon extends RolesBis<Boolean>{
 	
 	@Override
 	public boolean verifCommand(PlayerLG pl) {
-		if(LGUHC.etat.equals(EnumGame.STARTGAME) || LGUHC.timer > InventoryRegister.annonceroles.getValue()*60+300 || asCouple() || !pl.isAlive() || !active){
+		if(LGUHC.etat.equals(EnumGame.STARTGAME) || LGUHC.timer >= InventoryRegister.annonceroles.getValue()*60+300 || pouvoir != EnumCupidonState.SELECT || !pl.isAlive() || !active){
 			return false;
 		}
 		return true;
-	}
-	
-	private boolean asCouple(){
-		for(PlayerLG pl : PlayerLG.getAllPlayersManagers()){
-			if(pl.isCouple()){
-				return true;
-			}
-		}
-		return false;
 	}
 	
 	public void messageCouple(PlayerLG pl) {
 		ArrayList<String> pseudoAmoureux = new ArrayList<String>();
 		
 		// MESSAGE AU COUPLE
-		if(LGUHC.timer > InventoryRegister.annonceroles.getValue()*60+301){
-			for(PlayerLG p : PlayerLG.getAlivePlayersManagers()){
-				if(p.isCouple()){
-					SqlRequest.updateLGCouple(p.getUuid());
-					pseudoAmoureux.add(Bukkit.getOfflinePlayer(p.getUuid()).getName());
-				}
+		for(PlayerLG p : PlayerLG.getAlivePlayersManagers()){
+			if(p.isCouple()){
+				SqlRequest.updateLGCouple(p.getUuid());
+				pseudoAmoureux.add(Bukkit.getOfflinePlayer(p.getUuid()).getName());
 			}
 		}
 		pl.getPlayer().sendMessage("§6[LGUHC]§a Votre couple a été choisit avec succès : §2"+pseudoAmoureux.get(0)+"§a et §2"+pseudoAmoureux.get(1)+"§a.");
+		actionCouple();
 	}
 	
 	public void actionCouple() {
 		// MESSAGE AU COUPLE
-		if(LGUHC.timer > InventoryRegister.annonceroles.getValue()*60+301){
+		if(pouvoir == EnumCupidonState.MESSAGE && LGUHC.timer >= InventoryRegister.annonceroles.getValue()*60){
+			int nbCouple = 0;
 			for(PlayerLG p : PlayerLG.getAlivePlayersManagers()){
 				if(!p.hasCompas() && p.isOnline() && p.isCouple()){
 					p.setCompas(true);
@@ -137,9 +130,15 @@ public class Cupidon extends RolesBis<Boolean>{
 							}
 						}
 					}
-					p.getPlayer().sendMessage("§6[LGUHC] §c❤§e Vous tombez amoureux de "+amoureux+". Vous pouvez gagner gagner avec Cupidon et/ou le village et si l'un de vous vient à mourrir, l'autre ne supportera pas la douleur et se suicidera.");
+					p.getPlayer().sendMessage("§6[LGUHC] §c❤§e Vous tombez amoureux de "+amoureux+". Vous pouvez gagner avec Cupidon et/ou le village et si l'un de vous vient à mourrir, l'autre ne supportera pas la douleur et se suicidera.");
 					ItemStack compass = new ItemStack(Material.COMPASS, 1);
 					p.getPlayer().getWorld().dropItem(p.getPlayer().getLocation(), compass);
+				}
+				if(p.hasCompas())
+					nbCouple++;
+				if(nbCouple == 2) {
+					pouvoir = EnumCupidonState.END;
+					break;
 				}
 			}
 		}

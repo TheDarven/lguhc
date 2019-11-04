@@ -108,7 +108,7 @@ public class Game {
 							if(!InventoryRegister.coordonneesvisibles.getValue()) {
 								Title.sendActionBar(p, ChatColor.GOLD+"Distance au centre : "+ChatColor.YELLOW+message);
 							}
-							if(LGUHC.etat.equals(EnumGame.MIDDLEGAME) && LGUHC.timer%5 == 0){
+							if(LGUHC.etat.equals(EnumGame.MIDDLEGAME)){
 								pl.getRole().startRole(pl);
 								pl.getRole().verifRole(pl);
 								pl.getRole().endRole(pl);
@@ -263,17 +263,24 @@ public class Game {
 				scoreSpace1.setScore(number);
 				number++;
 				
+				String dateformatChrono;
+				
 				if(LGUHC.timer<6000){
-					String dateformatChrono = DurationFormatUtils.formatDuration(LGUHC.timer * 1000 , "mm:ss");
+					dateformatChrono = DurationFormatUtils.formatDuration(LGUHC.timer * 1000 , "mm:ss");
 					scoreTimer = objectiveTimer.getScore("Chrono :§e "+dateformatChrono);
 					scoreTimer.setScore(number);
 					number++;
 				}else{
-					String dateformatChrono = DurationFormatUtils.formatDuration(LGUHC.timer * 1000 , "mmm:ss");
+					dateformatChrono = DurationFormatUtils.formatDuration(LGUHC.timer * 1000 , "mmm:ss");
 					scoreTimer = objectiveTimer.getScore("Chrono :§e "+dateformatChrono);
 					scoreTimer.setScore(number);
 					number++;
 				}
+				
+				for(Player p : Bukkit.getOnlinePlayers()) {
+					 Title.sendTabHF(p, "§6LG UHC\n\n§eTimer : §f"+dateformatChrono+"\n", "\n§2Plugin par TheDarven\n§adiscord.gg/HZyS5T7");
+				}
+				
 				
 				if(InventoryRegister.murtime.getValue()*60 - LGUHC.timer>0){
 					if(InventoryRegister.murtime.getValue()*60 - LGUHC.timer<6000){
